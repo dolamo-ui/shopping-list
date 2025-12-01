@@ -16,6 +16,68 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
+3. User Guide
+Starting the App
+
+Open the app on your device/emulator.
+
+The home screen shows all existing shopping lists.
+
+Creating a New List
+
+Tap the “Create New List” button.
+
+Enter a name for your new list.
+
+Tap Save to create the list. It will now appear on the home screen.
+
+Viewing a List
+
+Tap a list from the home screen to open it.
+
+The list view shows all items with name, quantity, and price.
+
+You can see the total cost of unpurchased items at the top.
+
+Adding Items
+
+In a list, tap the “Add Item” button (+).
+
+Enter the item’s name, quantity, and price.
+
+Tap Save to add the item to the list.
+
+Marking Items as Purchased
+
+Tap an item to toggle between purchased and not purchased.
+
+Purchased items will appear strikethrough and greyed out.
+
+Deleting Items or Lists
+
+Swipe or tap the delete button next to an item to remove it.
+
+From the home screen, tap the Delete button on a list to remove the entire list.
+
+4. Notes
+
+All data is stored locally on your device using AsyncStorage.
+
+Closing the app does not delete lists; they persist until manually removed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
