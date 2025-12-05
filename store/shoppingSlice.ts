@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit';
 
 export interface Item {
   id: string;
@@ -8,11 +8,11 @@ export interface Item {
   purchased: boolean;
 }
 
-export interface ShoppingList {
+interface ShoppingList {
   name: string;
   items: Item[];
   createdAt: string;
-  completedAt?: string;
+  completedAt?: string | null;
 }
 
 interface ShoppingState {
@@ -36,50 +36,37 @@ const shoppingSlice = createSlice({
       state.currentListIndex = action.payload;
     },
     createList: (state, action: PayloadAction<string>) => {
-      const newList: ShoppingList = {
+      state.recentLists.unshift({
         name: action.payload,
         items: [],
         createdAt: new Date().toISOString(),
-      };
-      state.recentLists.unshift(newList);
-      state.currentListIndex = 0;
+      });
     },
     deleteList: (state, action: PayloadAction<number>) => {
-      state.recentLists = state.recentLists.filter((_, i) => i !== action.payload);
-      if (state.currentListIndex === action.payload) state.currentListIndex = null;
+      state.recentLists.splice(action.payload, 1);
+      state.currentListIndex = null;
     },
     addItem: (state, action: PayloadAction<Omit<Item, "id" | "purchased">>) => {
-      const index = state.currentListIndex;
-      if (index === null) return;
-      const newItem: Item = { ...action.payload, id: Date.now().toString(), purchased: false };
-      state.recentLists[index].items.push(newItem);
-      state.recentLists[index].completedAt = undefined;
+      const list = state.recentLists[state.currentListIndex!];
+      list.items.push({
+        id: nanoid(),
+        purchased: false,
+        ...action.payload,
+      });
     },
     togglePurchased: (state, action: PayloadAction<string>) => {
-      const index = state.currentListIndex;
-      if (index === null) return;
-      const list = state.recentLists[index];
-      list.items = list.items.map(i =>
-        i.id === action.payload ? { ...i, purchased: !i.purchased } : i
-      );
-      const allPurchased = list.items.length > 0 && list.items.every(i => i.purchased);
-      list.completedAt = allPurchased ? new Date().toISOString() : undefined;
+      const list = state.recentLists[state.currentListIndex!];
+      const item = list.items.find(i => i.id === action.payload);
+      if (item) item.purchased = !item.purchased;
     },
     editItem: (state, action: PayloadAction<Item>) => {
-      const index = state.currentListIndex;
-      if (index === null) return;
-      const list = state.recentLists[index];
-      list.items = list.items.map(i => (i.id === action.payload.id ? action.payload : i));
-      const allPurchased = list.items.length > 0 && list.items.every(i => i.purchased);
-      list.completedAt = allPurchased ? new Date().toISOString() : undefined;
+      const list = state.recentLists[state.currentListIndex!];
+      const index = list.items.findIndex(i => i.id === action.payload.id);
+      if (index !== -1) list.items[index] = action.payload;
     },
     deleteItem: (state, action: PayloadAction<string>) => {
-      const index = state.currentListIndex;
-      if (index === null) return;
-      const list = state.recentLists[index];
+      const list = state.recentLists[state.currentListIndex!];
       list.items = list.items.filter(i => i.id !== action.payload);
-      const allPurchased = list.items.length > 0 && list.items.every(i => i.purchased);
-      list.completedAt = allPurchased ? new Date().toISOString() : undefined;
     },
   },
 });
